@@ -1,0 +1,35 @@
+gzweb:
+    image: osrf/gazebo:gzweb5Nvidia
+    user: root
+    ports:
+        - "80:8080"
+        - "7681:7681"
+    links:
+        - "gzserver"
+    environment:
+        - "GAZEBO_MASTER_URI=http://gzserver:11345"
+    entrypoint: "/gzweb_entrypoint.sh"
+    command: 'ping gzserver'
+
+
+gzserver:
+    image: osrf/gazebo:gzweb5Nvidia
+    user: ubuntu
+    working_dir: /home/ubuntu
+    volumes:
+        - "/home:/home"
+        - "/dev/snd:/dev/snd"
+        - "/etc/group:/etc/group:ro"
+        - "/etc/passwd:/etc/passwd:ro"
+        - "/etc/shadow:/etc/shadow:ro"
+        - "/etc/sudoers.d:/etc/sudoers.d:ro"
+        - "/etc/localtime:/etc/localtime:ro"
+        - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    devices:
+        - "/dev/nvidia0"
+        - "/dev/nvidiactl"
+    environment:
+        - "DISPLAY=:0"
+        - "QT_X11_NO_MITSHM=1"
+    entrypoint: "/gazebo_entrypoint.sh"
+    command: gzserver --verbose
