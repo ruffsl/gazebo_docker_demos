@@ -26,7 +26,7 @@ Here is a breakdown of the dependencies across our demo application:
 For our local setup, we'll need to install Docker along with the other Docker tools so that we can make the necessary API calls to deploy our remote setup. If you wish to run gzclient locally as well, we'll need to have the GPU drivers installed so that we can mount the necessary devices into the container running gzclient for rendering in the GUI.
 
 ### Remote
-For our remote setup, we'll need an appropriate ami or virtual image to use for our GPU instance, so the Docker engine as well as the relevant Nvidia drivers installed. You can use this public AMI `ami-6dd8d85d`, however this AMI is region specific to Oregon. If you need to make you own, fallow the remote_setup.md for further instructions. The other thing we'll need to do is make a security group with the appropriate inbound and outbound permissions, i.e. the port openings for gzweb and docker connections. Again see the remote_setup.md for details.
+For our remote setup, we'll need an appropriate ami or virtual image to use for our GPU instance, so the Docker engine as well as the relevant Nvidia drivers installed. You can use this public AMI `ami-77dbdb47`, however this AMI is region specific to Oregon. If you need to make you own, fallow the remote_setup.md for further instructions. The other thing we'll need to do is make a security group with the appropriate inbound and outbound permissions, i.e. the port openings for gzweb and docker connections. Again see the remote_setup.md for details.
 
 ### Images
 For our image setup, we'll need to have Gazebo installed, meaning both gzserver and gzclient, as well as gzweb. We'll also need the matching Nvidia driver installed in the image to boot if we wish to have any of the sensors rendering properly. For this you can use the public docker image `osrf/gazebo:gzweb5Nvidia` available [here](https://registry.hub.docker.com/u/osrf/gazebo/). The Dockerfile to make this image is also within this tutorial.
@@ -63,7 +63,7 @@ docker-machine -D create \
     --amazonec2-vpc-id vpc-722ea217 \
     --amazonec2-region us-west-2 \
     --amazonec2-zone b \
-    --amazonec2-ami ami-6dd8d85d \
+    --amazonec2-ami ami-77dbdb47 \
     --amazonec2-instance-type g2.2xlarge \
     --swarm \
     --swarm-master \
