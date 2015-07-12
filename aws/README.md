@@ -109,12 +109,33 @@ docker-machine rm swarm-master
 
 ## Troubleshooting
 
- * **Q: ???:**
+* **Q: Do I need to use a GPU instance:**  
+The GPU instance on EC2 are expensive. Doe this Gazebo demo requare I use them?
 
-        xxx
+    **A: No, not neccesaraly**  
+    The GPUs are only neccesary if you requare any cameras or scene rendering done by the server for computer vision related simulations. If the only visual aspect you need is for the client GUI, then that is graphic dependancy for the host running the client, not the server running the simulation, gzserver. So to modify this demo to use a cheeper instance, just comment out the docker-machine argument specifing the GPU instance. By defult, the AWS driver will use a t2.micro instance. You could also comment out the AMI image and use the defult, as the one specifed is  only customly modified for the added Nvidia drivers and enabeled X server setup for gzserver to work with. Lastly, you'll need to comment out the device lines in the compose file before using it. As the Nvidia device will not exsist on a t2.micro, and thus fail to be mounted into the container running gzserver.
 
-    A: !!!.
+* **Q: I can't create a new machine with docker-machine because of key pairs:**  
+The error mentions that a key pair with the same name already exists.
 
-        yyy
+   **A: Check your AWS console**  
+   If you are having issues creating the machine, you may see an error about a key pair for `swarm-master` can not be created as as it already exists. This may be due to prior failed attempts in creating an engin and not being removed properly. Simply check your AWS web console and remove the old key pair so that is can be regenerated when you try agian.
 
+* **Q: I can't create a new machine with docker-machine because it already exists:**  
+The error mentions that a an engin with the same name already exists.
+
+  **A: Check your list of docker-machines**  
+  This may be due to not having removed the last machine named swarm-master from docker-machine. The name chosen, `swarm-master` in not special, as it only serves to help us identify the master of a paricular swarm. But if you try and make a second master with the same name as a machine that is still listed, it will fail. To list the existing machines use: `docker-machine ls` and to remove a particulare machine use" `docker-machine rm <name>`.
+
+* **Q: I can't connect to gzweb with my browser:**  
+The machine was created secsesfully, and the gzserver and gzweb services where started sucsesfully by docker-compose, but I still can't connect to gzweb through my web browser using the machine's public address.
+
+    **A: Check your security group in the AWS console**  
+    If everything was started succsesfuly and you can see the gzweb pinging the gzserver from the logging output, but still can not connect to gzweb, then you may need to check your AWS securaty groups. The default security group the docker-machine creates for the EC2 instance to use only provides inbound accsess for the three neccesary docker ports for remote API and SSH access. Using the AWS console you can edit the securaty group named `docker-machine` and add the additinal inbound rules for the HTTP port: 80 and gzweb port: 7681.
+
+* **Q: I built my own docker image for gzweb and it doesn't look right:**  
+I built my own docker image for gzweb from scratch using the Dockerfile provided for gzweb and it doesn't look right becuase many of the preview icons for the interface are missing.
+
+    **A: The build procces for gzweb is a bit weird currently**  
+    If you just use `docker build` to create the image for gzweb, you'll need to do a bit of extra handywork to complete the whole gzweb build prosses. The build requares rendering the collection of preview icons for all the 3D objects using gzserver. To do this gzserver needs desplay access, not somthing that is given in a docker build command. So after the `docker-build` is finished, I run a container from the image with x server and gpu hardware mounted, rerun the comilation with the added rendering argument, and commit the new state of the container to the same image tag. This is why I've done this for up and have shared it through Dcoker Hub regestry. Perhaps as we polish out gzweb, we'll find a simplermeanse of rendering durring the build process.
 ## Sources
